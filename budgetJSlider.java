@@ -19,7 +19,7 @@ public class budgetJSlider implements ChangeListener {
 	public budgetJSlider(budgetAlgo i)
 	{
 		//creates min,max,starting values
-		slider = new JSlider(0,100,50);
+		slider = new JSlider(0,10,5);
 		slider.setPreferredSize(new Dimension (10,20));
 		slider.addChangeListener(this);
 		p=i;
