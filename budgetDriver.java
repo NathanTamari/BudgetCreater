@@ -12,13 +12,13 @@ public class budgetDriver {
 	{
 		JFrame frame = new JFrame("test");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		int maybe;
+	//	int maybe;
 			//do {
 				frame.getContentPane().add(new budgetAlgo());
 				frame.pack();
 				frame.setVisible(true);
 				frame.setResizable(false);
-			 	maybe = JOptionPane.showConfirmDialog(null, "Continue?");
+	//		 	maybe = JOptionPane.showConfirmDialog(null, "Continue?");
 
 			//} while(maybe == JOptionPane.YES_OPTION);
 		

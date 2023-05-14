@@ -16,9 +16,9 @@ public class budgetAlgo extends JPanel{
 	private int incomeSliderValue;
 	// *********************************
 	
-	// JTextFields ******
+	// JTextFields *******
 	private JTextArea incomeText;
-	// ******************
+	// *******************
 
 	public budgetAlgo()
 	{
