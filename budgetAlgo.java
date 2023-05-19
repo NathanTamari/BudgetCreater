@@ -4,12 +4,14 @@ package BudgetCreater;
 // contains Algorithms for the execution of budgetDriver
 // Enter current income, expected income growth, monthly expenses (which are assumed to stay
 // the same), principal, and eventual goal of final amount
+// input data including goal in dollars, outputs how many years it wil take to achieve
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.awt.event.*;
-
 import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
 
 @SuppressWarnings("serial")
 public class budgetAlgo extends JPanel{
@@ -20,11 +22,13 @@ public class budgetAlgo extends JPanel{
 	private String changeValue;
 	private ArrayList<Integer> incomeGrowthArray, goalAmountArray, principalArray, incomeArray, stockGrowthArray,
 	monthlyArray;
+	private int monthlyInt, stockInt, incomeInt, incomeGrowthInt, goalInt, principalInt, totalYears;
+	private Font font;
 	// *********************************
 	
 	// JTextFields *******
 	private JTextArea incomeGrowth, monthlyExpenses, goalAmount, principalAmount, iText, igText,
-	mExpense, mGoal, pAmount, sGrowth, stockGrowth, incomeText;
+	mExpense, mGoal, pAmount, sGrowth, stockGrowth, incomeText, product, instructions;
 	// *******************
 
 	public budgetAlgo()
@@ -40,7 +44,9 @@ public class budgetAlgo extends JPanel{
 		incomeArray = new ArrayList<Integer>();
 		stockGrowthArray = new ArrayList<Integer>();
 		monthlyArray = new ArrayList<Integer>();
-		setBackground(Color.cyan);
+		Color customColor = new Color(204,153,255);
+		setBackground(customColor);
+		font = new Font("Courier", Font. BOLD,15);
 	}
 
 	//paints everything
@@ -54,6 +60,7 @@ public class budgetAlgo extends JPanel{
 		clearAll = new JButton("clear");
 		clearAll.setBounds(143,310,60,30);
 		clearAll.addActionListener(new clear());
+		clearAll.setBackground(getBackground());
 		add(clearAll);
 		
 		incomeB = new JButton("Change");
@@ -86,24 +93,23 @@ public class budgetAlgo extends JPanel{
 		stockB.addActionListener(new stockBListen());	
 		add(stockB);
 		
-		
 		//creates JTextAreas that are going to be edited ******************************
 		incomeGrowth = new JTextArea("");
-		incomeGrowth.setBounds(400,60,70,40);
+		incomeGrowth.setBounds(400,60,70,20);
 		incomeGrowth.setEditable(false);
 		incomeGrowth.setWrapStyleWord(true);
 		incomeGrowth.setLineWrap(true);
 		add(incomeGrowth);
 		
 		incomeText = new JTextArea("");
-		incomeText.setBounds(30,60,100,30);
+		incomeText.setBounds(30,60,100,20);
 		incomeText.setEditable(false);
 		incomeText.setLineWrap(true);
 		incomeText .setWrapStyleWord(true);
 		add(incomeText);
 		
 		monthlyExpenses = new JTextArea("");
-		monthlyExpenses.setBounds(700,60,100,30);
+		monthlyExpenses.setBounds(700,60,100,20);
 		monthlyExpenses.setEditable(false);
 		monthlyExpenses.setLineWrap(true);
 		monthlyExpenses.setWrapStyleWord(true);
@@ -133,41 +139,54 @@ public class budgetAlgo extends JPanel{
 		
 		
 		//shows where to enter what *********
-		iText = new JTextArea("Enter annual income:");
-		iText.setBounds(30,10,160,20);
+		instructions = new JTextArea("Press change, then enter in your " + "\n" + " values using the numberpad.");
+		instructions.setBounds(15,210,300,40);
+		instructions.setFont(font);
+		instructions.setEditable(false);
+		instructions.setBackground(getBackground());
+		add(instructions);
+		
+		product = new JTextArea("It will take __ years to reach your goal.");
+		product.setBounds(370,300,300,40);
+		product.setEditable(false);
+		product.setBackground(getBackground());
+		add(product);
+		
+		iText = new JTextArea("Enter post-tax annual income:");
+		iText.setBounds(20,10,200,20);
 		iText.setEditable(false);
-		iText.setBackground(Color.cyan);
+		iText.setBackground(getBackground());
 		add(iText);
 		
 		igText = new JTextArea("Enter your annual expected income growth rate: (as a %)");
 		igText.setBounds(300,10,400,20);
 		igText.setEditable(false);
-		igText.setBackground(Color.cyan);
+		igText.setBackground(getBackground());
 		add(igText);
 		
 		mGoal = new JTextArea("Enter the total amount you want to" + "\n" + "end up with:");
 		mGoal.setBounds(30,100,350,50);
 		mGoal.setEditable(false);
-		mGoal.setBackground(Color.cyan);
+		mGoal.setBackground(getBackground());
 		add(mGoal);
 		
 		mExpense = new JTextArea("Enter your monthly expenses:");
 		mExpense.setBounds(700,10,300,20);
 		mExpense.setEditable(false);
-		mExpense.setBackground(Color.cyan);
+		mExpense.setBackground(getBackground());
 		add(mExpense);
 		
 		pAmount = new JTextArea("Enter your principal amount:");
 		pAmount.setBounds(400,100,250,20);
 		pAmount.setEditable(false);
-		pAmount.setBackground(Color.cyan);
+		pAmount.setBackground(getBackground());
 		add(pAmount);
 		
 		sGrowth = new JTextArea("Enter expected annual stock growth: (as a %)" + "\n" + 
 		"(10% is average market return)");
 		sGrowth.setBounds(700,100,300,40);
 		sGrowth.setEditable(false);
-		sGrowth.setBackground(Color.cyan);
+		sGrowth.setBackground(getBackground());
 		add(sGrowth);
 		// **********************************
 		
@@ -229,10 +248,39 @@ public class budgetAlgo extends JPanel{
 		zero.setBounds(80,340,30,30);
 		add(zero);
 	}
-	
+	// 2
 	//calculates everything
-	public void calculateYears(String s) {		
-		
+	public int calculateYears() {	
+		totalYears=0;
+		monthlyInt = arrayCompressor(monthlyArray);
+		stockInt = arrayCompressor(stockGrowthArray);
+		incomeInt = arrayCompressor(incomeArray);
+		incomeGrowthInt = arrayCompressor(incomeGrowthArray);
+		goalInt = arrayCompressor(goalAmountArray);
+		principalInt = arrayCompressor(principalArray);
+		double percent = (incomeGrowthInt * 0.01) + 1;
+		double stockPercent = (stockInt * 0.01) + 1;
+		monthlyInt*=12;
+		while (principalInt < goalInt)
+		{
+			principalInt += (int) ((incomeInt * percent) - monthlyInt);
+			principalInt *= stockPercent;
+			totalYears++;
+			if (principalInt<0) return -1;
+		}
+		totalYears--;
+		return totalYears;
+	}
+	
+	
+	//turns arrayList into an int
+	public int arrayCompressor(ArrayList<Integer> b)
+	{ 
+		int newInt=0;
+		for(int i=0; i<b.size(); i++) {
+			newInt += (int) (b.get(i) * Math.pow(10,b.size()-i));	
+		}
+		return newInt/10;
 	}
 	
 	//changes JTextArea value
@@ -289,7 +337,6 @@ public class budgetAlgo extends JPanel{
 				return;
 		}
 		
-		
 		if(changeValue.equals("incomeGrowth")) {
 			incomeGrowthArray.add(a);
 			for(Integer i : incomeGrowthArray)
@@ -328,7 +375,9 @@ public class budgetAlgo extends JPanel{
 		private class pressButton implements ActionListener
 		{		
 		public void actionPerformed(ActionEvent e) {
-			calculateYears("");	
+			calculateYears();	
+			if(totalYears<0) product.setText("More data required.");
+			else product.setText("It will take " + totalYears + " years to reach your goal.");
 			}
 		}
 		
