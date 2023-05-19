@@ -6,25 +6,25 @@ package BudgetCreater;
 // the same), principal, and eventual goal of final amount
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.awt.event.*;
 
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class budgetAlgo extends JPanel{
 	// variable creation
-	
-	
-	//JSLiders *************************
-	private budgetJSlider incomeSlider;
-	private JSlider slide;
-	private int incomeSliderValue, years, income, monthly, principal, goal, incomeTotal, stock;
-	private JButton calculate, incomeB, monthlyB, goalAmountB, principalB, incomeTextB, stockB;
-	private budgetDriver driver;
+	//years, income, monthly, principal, goal, incomeTotal, stock;
+	private JButton calculate, incomeB, monthlyB, goalAmountB, principalB, incomeTextB, stockB, zero, one, two, three, four, five,
+	six, seven, eight, nine, delete, clearAll;
+	private String changeValue;
+	private ArrayList<Integer> incomeGrowthArray, goalAmountArray, principalArray, incomeArray, stockGrowthArray,
+	monthlyArray;
 	// *********************************
 	
 	// JTextFields *******
 	private JTextArea incomeGrowth, monthlyExpenses, goalAmount, principalAmount, iText, igText,
-	mExpense, mGoal, pAmount, sGrowth, stockGrowth, totalYears, incomeText;
+	mExpense, mGoal, pAmount, sGrowth, stockGrowth, incomeText;
 	// *******************
 
 	public budgetAlgo()
@@ -34,22 +34,28 @@ public class budgetAlgo extends JPanel{
 		//************************************************
 		setLayout(null);
 		setPreferredSize(new Dimension(1000,500));
-		
-		incomeSlider = new budgetJSlider(this);
-		incomeSliderValue = incomeSlider.getSlider().getValue();
-		
-		driver = new budgetDriver();
+		incomeGrowthArray = new ArrayList<Integer>();
+		goalAmountArray = new ArrayList<Integer>();
+		principalArray = new ArrayList<Integer>();
+		incomeArray = new ArrayList<Integer>();
+		stockGrowthArray = new ArrayList<Integer>();
+		monthlyArray = new ArrayList<Integer>();
+		setBackground(Color.cyan);
 	}
 
 	//paints everything
 	public void paintComponent(Graphics g) {
-		//creates JSliders
-		slide = incomeSlider.getSlider();
-		slide.setVisible(true);
-		slide.setBounds(300, 60, 100, 40);
+		//creates clickable JButtons
+		delete = new JButton("del");
+		delete.setBounds(150,280,30,30);
+		delete.addActionListener(new delete());
+		add(delete);
 		
-		add(slide);
-		//creates transparent JButtons to open dialog boxes
+		clearAll = new JButton("clear");
+		clearAll.setBounds(143,310,60,30);
+		clearAll.addActionListener(new clear());
+		add(clearAll);
+		
 		incomeB = new JButton("Change");
 		incomeB.setBounds(400,30,70,20);
 		incomeB.addActionListener(new incomeBListen());	
@@ -82,34 +88,46 @@ public class budgetAlgo extends JPanel{
 		
 		
 		//creates JTextAreas that are going to be edited ******************************
-		incomeGrowth = new JTextArea("  " + incomeSliderValue + "%");
+		incomeGrowth = new JTextArea("");
 		incomeGrowth.setBounds(400,60,70,40);
 		incomeGrowth.setEditable(false);
+		incomeGrowth.setWrapStyleWord(true);
+		incomeGrowth.setLineWrap(true);
 		add(incomeGrowth);
 		
-		incomeText = new JTextArea("77hjkhkhj");
+		incomeText = new JTextArea("");
 		incomeText.setBounds(30,60,100,30);
 		incomeText.setEditable(false);
+		incomeText.setLineWrap(true);
+		incomeText .setWrapStyleWord(true);
 		add(incomeText);
 		
 		monthlyExpenses = new JTextArea("");
 		monthlyExpenses.setBounds(700,60,100,30);
 		monthlyExpenses.setEditable(false);
+		monthlyExpenses.setLineWrap(true);
+		monthlyExpenses.setWrapStyleWord(true);
 		add(monthlyExpenses);
 		
 		goalAmount = new JTextArea("");
 		goalAmount.setBounds(30,175,150,20);
 		goalAmount.setEditable(false);
+		goalAmount.setWrapStyleWord(true);
+		goalAmount.setLineWrap(true);
 		add(goalAmount);
 		
 		principalAmount = new JTextArea("");
 		principalAmount.setBounds(400,175,150,20);
 		principalAmount.setEditable(false);
+		principalAmount.setWrapStyleWord(true);
+		principalAmount.setLineWrap(true);
 		add(principalAmount);
 		
-		stockGrowth = new JTextArea("10%");
+		stockGrowth = new JTextArea("");
 		stockGrowth.setBounds(700,175,100,30);
 		stockGrowth.setEditable(false);
+		stockGrowth.setWrapStyleWord(true);
+		stockGrowth.setLineWrap(true);
 		add(stockGrowth);
 		// *******************************************************************
 		
@@ -121,8 +139,8 @@ public class budgetAlgo extends JPanel{
 		iText.setBackground(Color.cyan);
 		add(iText);
 		
-		igText = new JTextArea("Enter your annual expected income growth rate:");
-		igText.setBounds(300,10,300,20);
+		igText = new JTextArea("Enter your annual expected income growth rate: (as a %)");
+		igText.setBounds(300,10,400,20);
 		igText.setEditable(false);
 		igText.setBackground(Color.cyan);
 		add(igText);
@@ -145,9 +163,9 @@ public class budgetAlgo extends JPanel{
 		pAmount.setBackground(Color.cyan);
 		add(pAmount);
 		
-		sGrowth = new JTextArea("Enter expected annual stock growth:" + "\n" + 
+		sGrowth = new JTextArea("Enter expected annual stock growth: (as a %)" + "\n" + 
 		"(10% is average market return)");
-		sGrowth.setBounds(700,100,250,40);
+		sGrowth.setBounds(700,100,300,40);
 		sGrowth.setEditable(false);
 		sGrowth.setBackground(Color.cyan);
 		add(sGrowth);
@@ -159,31 +177,151 @@ public class budgetAlgo extends JPanel{
 		calculate.setBounds(450,250,100,40);
 		add(calculate);
 		//*****
+		
+		//NUMBERS
+		one = new JButton("1");
+		one.addActionListener(new one());
+		one.setBounds(50,250,30,30);
+		add(one);
+		
+		two = new JButton("2");
+		two.addActionListener(new two());
+		two.setBounds(80,250,30,30);
+		add(two);
+		
+		three = new JButton("3");
+		three.addActionListener(new three());
+		three.setBounds(110,250,30,30);
+		add(three);
+		
+		four = new JButton("4");
+		four.addActionListener(new four());
+		four.setBounds(50,280,30,30);
+		add(four);
+		
+		five = new JButton("5");
+		five.addActionListener(new five());
+		five.setBounds(80,280,30,30);
+		add(five);
+		
+		six = new JButton("6");
+		six.addActionListener(new six());
+		six.setBounds(110,280,30,30);
+		add(six);
+		
+		seven = new JButton("7");
+		seven.addActionListener(new seven());
+		seven.setBounds(50,310,30,30);
+		add(seven);
+		
+		eight = new JButton("8");
+		eight.addActionListener(new eight());
+		eight.setBounds(80,310,30,30);
+		add(eight);
+		
+		nine = new JButton("9");
+		nine.addActionListener(new nine());
+		nine.setBounds(110,310,30,30);
+		add(nine);
+		
+		zero = new JButton("0");
+		zero.addActionListener(new zero());
+		zero.setBounds(80,340,30,30);
+		add(zero);
 	}
 	
 	//calculates everything
 	public void calculateYears(String s) {		
+		
 	}
 	
-	
-	//removes all non numerical values from the JTextArea
-	public int onlyNumbers(String jtext){
-		char ch;
-		String newNum = "";
-		for(int i=0; i<jtext.length(); i++)
-		{
-			ch=jtext.charAt(i);
-			if(Character.isDigit(ch)) newNum+=ch;
-		}
-		return Integer.parseInt(newNum);
-	}
-	
-	
-	//sets slider value
-	public void setSliderValue(int newVal)
+	//changes JTextArea value
+	public void addValue(int a)
 	{
-		incomeSliderValue = newVal;
-		incomeGrowth.setText("  " + newVal + "%");
+		//delete key, a=10
+		
+		//prevents index out of bounds error
+		if(changeValue==null) return;
+		if(a==10 && changeValue.equals("incomeGrowth") && incomeGrowthArray.size()==0) return;
+		if(a==10 && changeValue.equals("monthly") && monthlyArray.size()==0) return;
+		if(a==10 && changeValue.equals("goalAmount") && goalAmountArray.size()==0) return;
+		if(a==10 && changeValue.equals("principal") && principalArray.size()==0) return;
+		if(a==10 && changeValue.equals("income") && incomeArray.size()==0) return;
+		if(a==10 && changeValue.equals("stockGrowth") && stockGrowthArray.size()==0) return;
+		
+		if(a==10)
+		{
+			if(changeValue.equals("incomeGrowth")) incomeGrowthArray.remove(incomeGrowthArray.size()-1);
+				for(Integer i : incomeGrowthArray)
+			{
+					incomeGrowth.append("" + i);
+			}
+			
+			if(changeValue.equals("monthly")) monthlyArray.remove(monthlyArray.size()-1);
+				for(Integer i : monthlyArray)
+			{
+					monthlyExpenses.append("" + i);
+			}
+				
+			if(changeValue.equals("goalAmount")) goalAmountArray.remove(goalAmountArray.size()-1);
+				for(Integer i : goalAmountArray)
+			{
+					goalAmount.append("" + i);
+			}
+				
+			if(changeValue.equals("principal")) principalArray.remove(principalArray.size()-1);
+				for(Integer i : principalArray)
+				{
+					principalAmount.append("" + i);
+			}
+				
+			if(changeValue.equals("income")) incomeArray.remove(incomeArray.size()-1);
+				for(Integer i : incomeArray)
+				{
+					incomeText.append("" + i);
+			}
+				
+			if(changeValue.equals("stockGrowth")) stockGrowthArray.remove(stockGrowthArray.size()-1);
+				for(Integer i : stockGrowthArray)
+				{
+					stockGrowth.append("" + i);
+				}
+				return;
+		}
+		
+		
+		if(changeValue.equals("incomeGrowth")) {
+			incomeGrowthArray.add(a);
+			for(Integer i : incomeGrowthArray)
+		{
+				incomeGrowth.append("" + i);
+		}
+		}
+		if(changeValue.equals("monthly")) monthlyArray.add(a);
+			for(Integer i : monthlyArray)
+		{
+				monthlyExpenses.append("" + i);
+		}
+		if(changeValue.equals("goalAmount")) goalAmountArray.add(a);
+			for(Integer i : goalAmountArray)
+		{
+				goalAmount.append("" + i);
+		}
+		if(changeValue.equals("principal")) principalArray.add(a);
+			for(Integer i : principalArray)
+			{
+				principalAmount.append("" + i);
+		}
+		if(changeValue.equals("income")) incomeArray.add(a);
+			for(Integer i : incomeArray)
+			{
+				incomeText.append("" + i);
+		}
+		if(changeValue.equals("stockGrowth")) stockGrowthArray.add(a);
+			for(Integer i : stockGrowthArray)
+			{
+				stockGrowth.append("" + i);
+			}
 	}
 	
 	//calculates total
@@ -199,42 +337,138 @@ public class budgetAlgo extends JPanel{
 		private class incomeBListen implements ActionListener
 		{		
 		public void actionPerformed(ActionEvent e) {
-			driver.go();
+			changeValue = "incomeGrowth";
 			}
 		}
 		private class monthlyBListen implements ActionListener
 		{		
 		public void actionPerformed(ActionEvent e) {
-			
+			changeValue = "monthly";
 			}
 		}
 		private class goalAmountBListen implements ActionListener
 		{		
 		public void actionPerformed(ActionEvent e) {
-
+			changeValue = "goalAmount";
 			}
 		}
 		private class principalBListen implements ActionListener
 		{		
 		public void actionPerformed(ActionEvent e) {
-
+			changeValue = "principal";
 			}
 		}
 		private class incomeTextBListen implements ActionListener
 		{		
 		public void actionPerformed(ActionEvent e) {
-
+			changeValue = "income";
 			}
 		}
 		private class stockBListen implements ActionListener
 		{		
 		public void actionPerformed(ActionEvent e) {
-			
+			changeValue = "stockGrowth";
 			}
 		}
-		
-
 		//***************************************************
 		
+		//numbers
+		private class one implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(1);
+			}
+		}
+		private class two implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(2);
+			}
+		}
+		private class three implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(3);
+			}
+		}
+		private class four implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(4);
+			}
+		}
+		private class five implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(5);
+			}
+		}
+		private class six implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(6);
+			}
+		}
+		private class seven implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(7);
+			}
+		}
+		private class eight implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(8);
+			}
+		}
+		private class nine implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(9);
+			}
+		}
+		private class zero implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			addValue(0);
+			}
+		}
+		private class delete implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			if(changeValue.equals("incomeGrowth") && incomeGrowthArray.size()==1) {
+				incomeGrowthArray.removeAll(incomeGrowthArray);			
+			}
+			if(changeValue.equals("monthly") && monthlyArray.size()==1) {
+				monthlyArray.removeAll(monthlyArray);
+			}
+			if(changeValue.equals("goalAmount") && goalAmountArray.size()==1) {
+				goalAmountArray.removeAll(goalAmountArray);
+			}
+			if(changeValue.equals("principal") && principalArray.size()==1) {
+				principalArray.removeAll(principalArray);
+			}
+			if(changeValue.equals("income") && incomeArray.size()==1) {
+				incomeArray.removeAll(incomeArray);
+			}
+			if(changeValue.equals("stockGrowth") && stockGrowthArray.size()==1) {
+				stockGrowthArray.removeAll(stockGrowthArray);
+			}
+			addValue(10);
+			}
+		}		
+		
+		private class clear implements ActionListener
+		{		
+		public void actionPerformed(ActionEvent e) {
+			incomeGrowthArray.removeAll(incomeGrowthArray);
+			monthlyArray.removeAll(monthlyArray);
+			goalAmountArray.removeAll(goalAmountArray);
+			principalArray.removeAll(principalArray);
+			incomeArray.removeAll(incomeArray);
+			stockGrowthArray.removeAll(stockGrowthArray);
+			repaint();
+			}
+		}		
 	}
 	
